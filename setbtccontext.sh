@@ -2,7 +2,7 @@
 CWD=${pwd}
 
 export GITDIR=/Users/${USER}/git/bitcoin
-export BUILDDIR=/Users/${USER}/bitcoin/builds/
+export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds/
 echo $1
 IFS=':'
 ARG=$1
@@ -48,6 +48,7 @@ echo "Moving to build directory:" $dirname
 cd /Users/${USER}/git/bitcoin
 dirname=/Users/${USER}/bitcoin/builds/${SELECTED}
 echo "$dirname"/
+mkdir -p "$dirname"
 mv -v /Users/${USER}/git/bitcoin/build/* "$dirname"/
 cd $dirname
 
