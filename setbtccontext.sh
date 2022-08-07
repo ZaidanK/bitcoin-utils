@@ -12,6 +12,8 @@ export BRANCH=${a[0]}
 export NETWORK=${a[1]}
 
 cd $GITDIR
+make clean
+git clean -f -dX
 select what branch
 branches=()
 eval "$(git for-each-ref --shell --format='branches+=(%(refname))' refs/heads/)"
