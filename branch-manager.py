@@ -37,7 +37,7 @@ def subcommand(args=[], parent=subparsers):
         parser.set_defaults(func=func)
     return decorator
 
-BITCOIN_CHAIN = ["test","main", "regtest"]
+BITCOIN_CHAIN = ["testnet","mainnet", "regtest"]
 
 def get_branches():
     return pygit2.Repository(path=os.getenv('GITDIR')).branches.local
@@ -63,7 +63,7 @@ def context(args):
             print(f"echo Found more than one branch matching {context[1]}")
 
         else:
-            cmd.append(f"export BRANCH={filtered_branches[0]};")
+            cmd.append(f"export BITCOIN_GIT_BRANCH={filtered_branches[0]};")
             
         print("".join(cmd))
             
