@@ -1,7 +1,7 @@
 #!/bin/zsh
 export GITDIR=/Users/${USER}/git/bitcoin
 export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds
-export BITCOIN_CHAIN=mainnet
+export BITCOIN_CHAIN=main
 export BITCOIN_GIT_BRANCH=master
 export BITCOIN_CONTEXT_ACTIVE=1
 export BITCOIN_CHAINS=(mainnet testnet regtest)
@@ -76,7 +76,7 @@ set_alias() {
 
     alias bcstart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -${BITCOIN_CHAIN} -daemon"
     alias bcstop="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} stop"
-    alias bcrestart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} stop; bitcoind -chain=${BITCOIN_CHAIN}"
+    alias bcrestart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} stop; ${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -chain=${BITCOIN_CHAIN}"
     alias bcconf="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} getinfo"
 
     alias bcdir="cd /Users/${USER}/Library/Application\ Support/Bitcoin" #maco default bitcoin path
