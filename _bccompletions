@@ -1,0 +1,6 @@
+#compdef bcnetwork
+
+_bcnetwork() {
+
+}
+

@@ -3,6 +3,8 @@ export GITDIR=/Users/${USER}/git/bitcoin
 export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds/
 export BITCOIN_CHAIN=mainnet
 export BITCOIN_GIT_BRANCH=master
+export BITCOIN_CONTEXT_ACTIVE=1
+export BITCOIN_CHAINS=(mainnet testnet regtest)
 
 
 setbtccontext() {
@@ -10,9 +12,29 @@ setbtccontext() {
     eval $(python ./branch-manager.py context "$1")
 }
 
-network() {
-    export BITCOIN_
+bcbranch() {
+    
 }
+
+bcnetwork() {
+    BITCOIN_CHAIN=$1
+}
+
+_network() {
+    COMPREPLY=();
+    local word="${COMP_WORDS[COMP_CWORD]}";
+    if [ "$COMP_CWORD" -eq 1 ]; then
+        COMPREPLY=($(compgen -W "testnet mainnet regtest" -- "$word"));
+    else
+        local words=("${COMP_WORDS[@]}");
+        unset words[0];
+        unset words[$COMP_CWORD];
+        local completions=$(rbenv completions "${words[@]}");
+        COMPREPLY=($(compgen -W "$completions" -- "$word"));
+    fi
+}
+
+complete -F _network network
 
 show_envar() {
     #Shows the current environment variables
@@ -46,18 +68,18 @@ build() {
 }
 
 set_alias() {
-    alias btcdir="cd ~/.bitcoin/" #linux default bitcoind path
-    alias bc="bitcoin-cli -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
-    alias bd="bitcoind -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
-    alias btcinfo='bitcoin-cli getwalletinfo | egrep "\"balance\""; bitcoin-cli -chain=${BITCOIN_CHAIN} getnetworkinfo | egrep "\"version\"|connections"; bitcoin-cli -chain=${BITCOIN_CHAIN} getmininginfo | egrep "\"blocks\"|errors"'
+    alias bc="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
+    alias bd="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
+    alias btcinfo='${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli getwalletinfo | egrep "\"balance\""; bitcoin-cli -chain=${BITCOIN_CHAIN} getnetworkinfo | egrep "\"version\"|connections"; bitcoin-cli -chain=${BITCOIN_CHAIN} getmininginfo | egrep "\"blocks\"|errors"'
 
-    alias bcstart="bitcoind -${BITCOIN_CHAIN} -daemon"
-    alias bcstop="bitcoin-cli -${BITCOIN_CHAIN} stop"
-    alias bcrestart="bitcoin-cli -${BITCOIN_CHAIN} stop; bitcoind -${BITCOIN_CHAIN} -daemon"
-    alias bcconf="bitcoin-cli -${BITCOIN_CHAIN} getinfo"
+    alias bcstart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -${BITCOIN_CHAIN} -daemon"
+    alias bcstop="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -${BITCOIN_CHAIN} stop"
+    alias bcrestart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -${BITCOIN_CHAIN} stop; bitcoind -${BITCOIN_CHAIN} -daemon"
+    alias bcconf="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -${BITCOIN_CHAIN} getinfo"
 
-    alias bcdir="cd /Users/${USER}/Library/Application Support/Bitcoin" #maco default bitcoin path
+    alias bcdir="cd /Users/${USER}/Library/Application\ Support/Bitcoin" #maco default bitcoin path
     alias bcgit="cd /Users/${USER}/git/bitcoin"
+    alias bcbuilddir="cd ${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}"
 
 
 
