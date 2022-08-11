@@ -95,7 +95,7 @@ exit() {
 
 }
 
-bcreload {
+bcreload() {
     #Reloads the current bitcoin environment
 
     CUR=$(pwd)
