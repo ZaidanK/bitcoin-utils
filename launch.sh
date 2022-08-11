@@ -95,4 +95,14 @@ exit() {
 
 }
 
+bcreload {
+    #Reloads the current bitcoin environment
+
+    CUR=$(pwd)
+    cd /Users/${USER}/git/bitcoin-utils
+    git pull
+    source launch.sh
+    cd $CUR
+    
+} 
 set_alias
