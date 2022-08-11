@@ -1,6 +1,6 @@
 #!/bin/zsh
 export GITDIR=/Users/${USER}/git/bitcoin
-export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds/
+export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds
 export BITCOIN_CHAIN=mainnet
 export BITCOIN_GIT_BRANCH=master
 export BITCOIN_CONTEXT_ACTIVE=1
@@ -14,10 +14,12 @@ setbtccontext() {
 
 bcbranch() {
     BITCOIN_GIT_BRANCH=$1
+    set_alias
 }
 
 bcnetwork() {
     BITCOIN_CHAIN=$1
+    set_alias
 }
 
 _network() {
@@ -70,12 +72,12 @@ build() {
 set_alias() {
     alias bc="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
     alias bd="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
-    alias btcinfo='${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli getwalletinfo | egrep "\"balance\""; bitcoin-cli -chain=${BITCOIN_CHAIN} getnetworkinfo | egrep "\"version\"|connections"; bitcoin-cli -chain=${BITCOIN_CHAIN} getmininginfo | egrep "\"blocks\"|errors"'
+    alias btcinfo='${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} getwalletinfo | egrep "\"balance\""; bitcoin-cli -chain=${BITCOIN_CHAIN} getnetworkinfo | egrep "\"version\"|connections"; bitcoin-cli -chain=${BITCOIN_CHAIN} getmininginfo | egrep "\"blocks\"|errors"'
 
     alias bcstart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -${BITCOIN_CHAIN} -daemon"
-    alias bcstop="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -${BITCOIN_CHAIN} stop"
-    alias bcrestart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -${BITCOIN_CHAIN} stop; bitcoind -${BITCOIN_CHAIN} -daemon"
-    alias bcconf="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -${BITCOIN_CHAIN} getinfo"
+    alias bcstop="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} stop"
+    alias bcrestart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} stop; bitcoind -chain=${BITCOIN_CHAIN}"
+    alias bcconf="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} getinfo"
 
     alias bcdir="cd /Users/${USER}/Library/Application\ Support/Bitcoin" #maco default bitcoin path
     alias bcgit="cd /Users/${USER}/git/bitcoin"
