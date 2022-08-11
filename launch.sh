@@ -13,7 +13,7 @@ setbtccontext() {
 }
 
 bcbranch() {
-    
+    BITCOIN_GIT_BRANCH=$1
 }
 
 bcnetwork() {
