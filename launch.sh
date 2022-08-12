@@ -4,7 +4,7 @@ export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds
 export BITCOIN_CHAIN=main
 export BITCOIN_GIT_BRANCH=master
 export BITCOIN_CONTEXT_ACTIVE=1
-export BITCOIN_CHAINS=(mainnet testnet regtest)
+export BITCOIN_CHAINS=(main test regtest signet)
 
 
 setbtccontext() {
@@ -15,11 +15,13 @@ setbtccontext() {
 bcbranch() {
     BITCOIN_GIT_BRANCH=$1
     set_alias
+    PROMPT=$(bc_prompt)
 }
 
-bcnetwork() {
+bcchain() {
     BITCOIN_CHAIN=$1
     set_alias
+    PROMPT=$(bc_prompt)
 }
 
 _network() {
@@ -58,6 +60,9 @@ configure() {
 
 build() {
     configure()
+    if [[ ! -d $GITDIR/build/ ]]; then
+        mkdir -p $GITDIR/build/
+    fi
     cd $GITDIR/build/
     make -j 8
     make check
@@ -74,7 +79,7 @@ set_alias() {
     alias bd="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
     alias btcinfo='${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} getwalletinfo | egrep "\"balance\""; bitcoin-cli -chain=${BITCOIN_CHAIN} getnetworkinfo | egrep "\"version\"|connections"; bitcoin-cli -chain=${BITCOIN_CHAIN} getmininginfo | egrep "\"blocks\"|errors"'
 
-    alias btcblock="echo $(bc getblockcount) /\ $(wget -O - https://blockstream.info/testnet/api/blocks/tip/height 2> /dev/null | cut -d : -f2 | rev | cut -c 1- | rev)"
+    #alias btcblock="echo $(bc getblockcount) /\ $(wget -O - https://blockstream.info/testnet/api/blocks/tip/height 2> /dev/null | cut -d : -f2 | rev | cut -c 1- | rev)"
 
 
     alias bcstart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -chain=${BITCOIN_CHAIN} -daemon"
@@ -95,7 +100,7 @@ pull() {
 }
 
 exit() {
-
+    $PROMPT=$OLD_PROMPT
 }
 
 bcreload() {
@@ -106,6 +111,45 @@ bcreload() {
     git pull
     source launch.sh
     cd $CUR
+    setopt PROMPT_SUBST
     
 } 
+
+bcbranch_prompt() {
+
+
+    UPSTREAM=${1:-'@{u}'}
+    LOCAL=$(git -C $GITDIR rev-parse @)
+    REMOTE=$(git -C $GITDIR rev-parse "$UPSTREAM")
+    if [ $LOCAL = $REMOTE ]; then
+        echo $fg[green]$BITCOIN_GIT_BRANCH$reset \> 
+    else
+        echo $fg[red]$BITCOIN_GIT_BRANCH$reset$fg[white] \> 
+    fi
+
+}
+
+bcchain_prompt() {
+    if [ $BITCOIN_CONTEXT_ACTIVE -eq 1 ]; then
+        case $BITCOIN_CHAIN in 
+            main)
+                echo $fg[green]$BITCOIN_CHAIN$reset$fg[white] \>
+                ;;
+            test)
+                echo $fg[yellow]$BITCOIN_CHAIN$reset$fg[white] \>
+                ;;
+            regtest)
+                echo $fg[red]$BITCOIN_CHAIN$reset$fg[white] \>
+                ;;
+            *)
+                echo $fg[blue]$BITCOIN_CHAIN$reset$fg[white] \>
+                ;;
+        esac
+    fi
+}
+
+bc_prompt() {
+    OLD_PROMPT=$PROMPT
+    echo $fg[white]@%m%{$reset_color%} $(bcbranch_prompt) $(bcchain_prompt) %{$fg[cyan]%}%c%{$reset_color%} \> $fg[white]%\$ $reset_color
+}
 set_alias
