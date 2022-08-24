@@ -1,5 +1,5 @@
 #!/bin/zsh
-export GITDIR=/Users/${USER}/git/docker-ubuntu/repo/bitcoin
+export GITDIR=/Users/${USER}/git/bitcoin
 export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds
 export BITCOIN_CHAIN=main
 export BITCOIN_GIT_BRANCH=master
@@ -10,6 +10,10 @@ export BITCOIN_CHAINS=(main test regtest signet)
 setbtccontext() {
     #Sets BITCOIN_CHAIN and BITCOIN_GIT_BRANCH
     eval $(python ./branch-manager.py context "$1")
+}
+
+bcbranches() {
+    eval $(python /Users/${USER}/git/bitcoin-utils/branch-manager.py branches)
 }
 
 bcbranch() {
