@@ -1,5 +1,5 @@
 #!/bin/zsh
-export GITDIR=/Users/${USER}/git/bitcoin
+export GITDIR=/Users/${USER}/git/docker-ubuntu/repo/bitcoin
 export BITCOIN_BUILDDIR=/Users/${USER}/bitcoin/builds
 export BITCOIN_CHAIN=main
 export BITCOIN_GIT_BRANCH=master
@@ -24,22 +24,6 @@ bcchain() {
     PROMPT=$(bc_prompt)
 }
 
-_network() {
-    COMPREPLY=();
-    local word="${COMP_WORDS[COMP_CWORD]}";
-    if [ "$COMP_CWORD" -eq 1 ]; then
-        COMPREPLY=($(compgen -W "testnet mainnet regtest" -- "$word"));
-    else
-        local words=("${COMP_WORDS[@]}");
-        unset words[0];
-        unset words[$COMP_CWORD];
-        local completions=$(rbenv completions "${words[@]}");
-        COMPREPLY=($(compgen -W "$completions" -- "$word"));
-    fi
-}
-
-complete -F _network network
-
 show_envar() {
     #Shows the current environment variables
     echo "GITDIR: $GITDIR"
@@ -55,7 +39,7 @@ configure() {
     mkdir build
     cd build
     ../autogen.sh
-    ../configure --without-bdb --without-gui
+    ../configure --without-bdb --without-gui 
 }
 
 build() {
@@ -68,7 +52,10 @@ build() {
     make check
     dirname=${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}
     echo "Moving to build directory:" $dirname
-    mkdir -p "$dirname"
+
+    if [[ ! -d "$dirname" ]]; then
+        mkdir -p "$dirname"
+    fi
     mv -v /Users/${USER}/git/bitcoin/build/* "$dirname"/
     cd $dirname
 
@@ -79,16 +66,13 @@ set_alias() {
     alias bd="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -chain=${BITCOIN_CHAIN}" #linux default bitcoind path
     alias btcinfo='${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} getwalletinfo | egrep "\"balance\""; bitcoin-cli -chain=${BITCOIN_CHAIN} getnetworkinfo | egrep "\"version\"|connections"; bitcoin-cli -chain=${BITCOIN_CHAIN} getmininginfo | egrep "\"blocks\"|errors"'
 
-    #alias btcblock="echo $(bc getblockcount) /\ $(wget -O - https://blockstream.info/testnet/api/blocks/tip/height 2> /dev/null | cut -d : -f2 | rev | cut -c 1- | rev)"
-
-
     alias bcstart="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoind -chain=${BITCOIN_CHAIN} -daemon"
     alias bcstop="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} stop"
     alias bcrestart="bcstop; bcstart"
     alias bcconf="${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}/src/bitcoin-cli -chain=${BITCOIN_CHAIN} getinfo"
 
     alias bcdir="cd /Users/${USER}/Library/Application\ Support/Bitcoin" #maco default bitcoin path
-    alias bcgit="cd /Users/${USER}/git/bitcoin"
+    alias bcgit="cd ${GITDIR}"
     alias bcbuilddir="cd ${BITCOIN_BUILDDIR}/${BITCOIN_GIT_BRANCH}"
 
 
@@ -133,16 +117,16 @@ bcchain_prompt() {
     if [ $BITCOIN_CONTEXT_ACTIVE -eq 1 ]; then
         case $BITCOIN_CHAIN in 
             main)
-                echo $fg[green]$BITCOIN_CHAIN$reset$fg[white] \>
+                echo $fg[green]m$reset$fg[white] \>
                 ;;
             test)
-                echo $fg[yellow]$BITCOIN_CHAIN$reset$fg[white] \>
+                echo $fg[yellow]t$reset$fg[white] \>
                 ;;
             regtest)
-                echo $fg[red]$BITCOIN_CHAIN$reset$fg[white] \>
+                echo $fg[red]r$reset$fg[white] \>
                 ;;
             *)
-                echo $fg[blue]$BITCOIN_CHAIN$reset$fg[white] \>
+                echo $fg[blue]s$reset$fg[white] \>
                 ;;
         esac
     fi
